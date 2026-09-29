@@ -50,13 +50,13 @@ export class CaffAgent extends Agent<Env, ChatState> {
   async chat(message: string, origin: string): Promise<ChatReply> {
     // TODO 1: connect to your own MCP server, the same way Cloudflare OS did.
     // Uncomment this. The headers tell the dashboard the calls come from your agent.
-    //
-    // await this.addMcpServer("caff", `${origin}/mcp`, {
-    //   transport: {
-    //     type: "streamable-http",
-    //     headers: { "x-caff-client": "agent", "x-caff-origin": origin }
-    //   }
-    // });
+    
+    await this.addMcpServer("caff", `${origin}/mcp`, {
+      transport: {
+        type: "streamable-http",
+        headers: { "x-caff-client": "agent", "x-caff-origin": origin }
+      }
+    });
 
     // Ask the model. It sees the conversation so far and, once you've done
     // TODO 2, every tool your MCP server offers. The SDK runs the tools the
@@ -66,7 +66,7 @@ export class CaffAgent extends Agent<Env, ChatState> {
       system: SYSTEM_PROMPT,
       messages: toModelMessages(this.state.messages, message),
       // TODO 2: give the model your MCP tools. Uncomment the next line.
-      // tools: this.mcp.getAITools(),
+      tools: this.mcp.getAITools(),
       stopWhen: isStepCount(8)
     });
 
