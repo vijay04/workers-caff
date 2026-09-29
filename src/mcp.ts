@@ -79,7 +79,8 @@ export function createCaffMcpServer(caff: Caff) {
       })
     },
     async ({ table, items, note }) => {
-      // your code here
+      const order = await caff.placeOrder({ table, items, note });
+      return asText(order);
     }
   );
 
