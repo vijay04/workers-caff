@@ -65,7 +65,6 @@ export class CaffAgent extends Agent<Env, ChatState> {
       model: chatModel(this.env),
       system: SYSTEM_PROMPT,
       messages: toModelMessages(this.state.messages, message),
-      // TODO 2: give the model your MCP tools. Uncomment the next line.
       tools: this.mcp.getAITools(),
       stopWhen: isStepCount(8)
     });
