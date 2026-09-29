@@ -58,30 +58,30 @@ export function createCaffMcpServer(caff: Caff) {
   // The schema is written for you. Fill in the handler: call caff.placeOrder
   // and return the order it gives back, wrapped in asText(...).
   //
-  // server.registerTool(
-  //   "place_order",
-  //   {
-  //     title: "Place an order",
-  //     description:
-  //       "Place a new order for a table. Use item ids from get_menu. Stock goes down straight away. Returns the order number and total.",
-  //     inputSchema: z.object({
-  //       table: z.number().int().min(1).max(12).describe("Table number, 1 to 12"),
-  //       items: z
-  //         .array(
-  //           z.object({
-  //             itemId: z.string().describe("Menu item id from get_menu, e.g. bacon-butty"),
-  //             qty: z.number().int().min(1).max(20).default(1).describe("How many")
-  //           })
-  //         )
-  //         .min(1)
-  //         .describe("What the table wants"),
-  //       note: z.string().max(140).optional().describe("Anything the kitchen should know, e.g. no mushrooms")
-  //     })
-  //   },
-  //   async ({ table, items, note }) => {
-  //     // your code here
-  //   }
-  // );
+  server.registerTool(
+    "place_order",
+    {
+      title: "Place an order",
+      description:
+        "Place a new order for a table. Use item ids from get_menu. Stock goes down straight away. Returns the order number and total.",
+      inputSchema: z.object({
+        table: z.number().int().min(1).max(12).describe("Table number, 1 to 12"),
+        items: z
+          .array(
+            z.object({
+              itemId: z.string().describe("Menu item id from get_menu, e.g. bacon-butty"),
+              qty: z.number().int().min(1).max(20).default(1).describe("How many")
+            })
+          )
+          .min(1)
+          .describe("What the table wants"),
+        note: z.string().max(140).optional().describe("Anything the kitchen should know, e.g. no mushrooms")
+      })
+    },
+    async ({ table, items, note }) => {
+      // your code here
+    }
+  );
 
   // TODO 2: list_orders
   // Read-only, like get_menu. Both inputs are optional.
