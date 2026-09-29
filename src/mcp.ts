@@ -87,49 +87,67 @@ export function createCaffMcpServer(caff: Caff) {
   // TODO 2: list_orders
   // Read-only, like get_menu. Both inputs are optional.
   //
-  // server.registerTool(
-  //   "list_orders",
-  //   {
-  //     title: "List orders",
-  //     description:
-  //       "List orders, newest first. 'active' (the default) means anything not yet served or cancelled. Optionally filter by table.",
-  //     inputSchema: z.object({
-  //       status: z
-  //         .enum(["active", "new", "cooking", "ready", "served", "cancelled", "all"])
-  //         .default("active")
-  //         .describe("Which orders to show"),
-  //       table: z.number().int().min(1).max(12).optional().describe("Only this table")
-  //     }),
-  //     annotations: { readOnlyHint: true }
-  //   },
-  //   async ({ status, table }) => {
-  //     // your code here
-  //   }
-  // );
+  server.registerTool(
+    "list_orders",
+    {
+      title: "List orders",
+      description:
+        "List orders, newest first. 'active' (the default) means anything not yet served or cancelled. Optionally filter by table.",
+      inputSchema: z.object({
+        status: z
+          .enum(["active", "new", "cooking", "ready", "served", "cancelled", "all"])
+          .default("active")
+          .describe("Which orders to show"),
+        table: z.number().int().min(1).max(12).optional().describe("Only this table")
+      }),
+      annotations: { readOnlyHint: true }
+    },
+    async ({ status, table }) => {
+      const orders = await caff.listOrders({ status, table });
+      return asText(orders);
+    }
+  );
 
   // TODO 3: update_order_status
   // Orders move new → cooking → ready → served (or cancelled).
   //
-  // server.registerTool(
-  //   "update_order_status",
-  //   {
-  //     title: "Update an order's status",
-  //     description:
-  //       "Move an order through the kitchen: new → cooking → ready → served. Orders only move forward. 'cancelled' cancels it and returns the stock.",
-  //     inputSchema: z.object({
-  //       orderId: z.number().int().describe("The order number, e.g. 101"),
-  //       status: z.enum(["cooking", "ready", "served", "cancelled"]).describe("The new status")
-  //     })
-  //   },
-  //   async ({ orderId, status }) => {
-  //     // your code here
-  //   }
-  // );
+  server.registerTool(
+    "update_order_status",
+    {
+      title: "Update an order's status",
+      description:
+        "Move an order through the kitchen: new → cooking → ready → served. Orders only move forward. 'cancelled' cancels it and returns the stock.",
+      inputSchema: z.object({
+        orderId: z.number().int().describe("The order number, e.g. 101"),
+        status: z.enum(["cooking", "ready", "served", "cancelled"]).describe("The new status")
+      })
+    },
+    async ({ orderId, status }) => {
+      const order = await caff.updateOrderStatus(orderId, status);
+      return asText(order);
+    }
+  );
 
   // TODO 4: restock_item
   // This one's all yours: write the description and the inputSchema too.
   // Inputs: itemId (a string) and quantity (a whole number, 1 to 50).
   // Then call caff.restockItem(itemId, quantity).
+  server.registerTool(
+    "restock_item",
+    {
+      title: "Restock an item",
+      description:
+        "Add stock for a menu item. Use item ids from get_menu. Returns the updated item with new portions left.",
+      inputSchema: z.object({
+        itemId: z.string().describe("Menu item id from get_menu, e.g. bacon-butty"),
+        quantity: z.number().int().min(1).max(50).describe("How many to add to stock")
+      })
+    },
+    async ({ itemId, quantity }) => {
+      const item = await caff.restockItem(itemId, quantity);
+      return asText(item);
+    }
+  );
 
   return server;
 }
